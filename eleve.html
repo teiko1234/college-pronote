@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Élève - Système Scolaire</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2>Bienvenue, Élève</h2>
+    <div class="dashboard">
+        <h3>Vos Notes</h3>
+        <ul id="notes-list"></ul>
+        
+        <h3>Vos Absences</h3>
+        <ul id="absences-list"></ul>
+        
+        <h3>Vos Sanctions</h3>
+        <ul id="sanctions-list"></ul>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const notes = ["Math: 15/20", "Français: 17/20", "Histoire: 14/20"];
+            const absences = ["12/03/2025 - Justifiée", "15/03/2025 - Non justifiée"];
+            const sanctions = ["Aucune sanction enregistrée"];
+            
+            const notesList = document.getElementById("notes-list");
+            notes.forEach(note => {
+                const li = document.createElement("li");
+                li.textContent = note;
+                notesList.appendChild(li);
+            });
+            
+            const absencesList = document.getElementById("absences-list");
+            absences.forEach(abs => {
+                const li = document.createElement("li");
+                li.textContent = abs;
+                absencesList.appendChild(li);
+            });
+            
+            const sanctionsList = document.getElementById("sanctions-list");
+            sanctions.forEach(sanction => {
+                const li = document.createElement("li");
+                li.textContent = sanction;
+                sanctionsList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>

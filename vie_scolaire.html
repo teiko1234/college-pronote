@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vie Scolaire - Gestion des Absences et Sanctions</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2>Gestion des Absences et Sanctions</h2>
+
+    <div>
+        <h3>Rechercher un élève (Nom d'utilisateur) :</h3>
+        <input type="text" id="search" placeholder="Nom d'utilisateur">
+        <button onclick="searchStudent()">Rechercher</button>
+    </div>
+
+    <div id="student-info" style="display: none;">
+        <h3>Détails de l'élève</h3>
+        <p id="student-details"></p>
+
+        <h4>Absences :</h4>
+        <ul id="absences-list"></ul>
+        <label for="absence">Ajouter une absence :</label>
+        <input type="text" id="absence" placeholder="Absence à ajouter">
+        <button onclick="addAbsence()">Ajouter</button>
+
+        <h4>Sanctions :</h4>
+        <ul id="sanctions-list"></ul>
+        <label for="sanction">Ajouter une sanction :</label>
+        <input type="text" id="sanction" placeholder="Sanction à ajouter">
+        <button onclick="addSanction()">Ajouter</button>
+    </div>
+
+    <script>
+        // Fonction pour rechercher un élève
+        function searchStudent() {
+            const search = document.getElementById("search").value.trim();
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const student = users.find(user => user.username === search && user.role === "eleve");
+
+            if (student) {
+                // Affichage des détails de l'élève
+                document.getElementById("student-info").style.display = "block";
+                document.getElementById("student-details").textContent = `Nom d'utilisateur : ${student.username}`;
+                
+                // Récupérer les absences et sanctions de l'élève
+                const absences = JSON.parse(localStorage.getItem(`absences_${student.username}`)) || [];
+                const sanctions = JSON.parse(localStorage.getItem(`sanctions_${student.username}`)) || [];
+
+                // Afficher les absences
+                const absencesList = document.getElementById("absences-list");
+                absencesList.innerHTML = "";
+                absences.forEach(abs => {
+                    const li = document.createElement("li");
+                    li.textContent = abs;
+                    absencesList.appendChild(li);
+                });
+
+                // Afficher les sanctions
+                const sanctionsList = document.getElementById("sanctions-list");
+                sanctionsList.innerHTML = "";
+                sanctions.forEach(sanction => {
+                    const li = document.createElement("li");
+                    li.textContent = sanction;
+                    sanctionsList.appendChild(li);
+                });
+            } else {
+                alert("Élève non trouvé ou rôle incorrect.");
+                document.getElementById("student-info").style.display = "none";
+            }
+        }
+
+        // Fonction pour ajouter une absence
+        function addAbsence() {
+            const search = document.getElementById("search").value.trim();
+            const absenceText = document.getElementById("absence").value.trim();
+
+            if (!absenceText) {
+                alert("Veuillez entrer une absence !");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const student = users.find(user => user.username === search && user.role === "eleve");
+
+            if (student) {
+                let absences = JSON.parse(localStorage.getItem(`absences_${student.username}`)) || [];
+                absences.push(absenceText);
+                localStorage.setItem(`absences_${student.username}`, JSON.stringify(absences));
+
+                alert("Absence ajoutée avec succès.");
+                // Réafficher les absences après ajout
+                const absencesList = document.getElementById("absences-list");
+                const li = document.createElement("li");
+                li.textContent = absenceText;
+                absencesList.appendChild(li);
+
+                document.getElementById("absence").value = "";
+            } else {
+                alert("Élève non trouvé.");
+            }
+        }
+
+        // Fonction pour ajouter une sanction
+        function addSanction() {
+            const search = document.getElementById("search").value.trim();
+            const sanctionText = document.getElementById("sanction").value.trim();
+
+            if (!sanctionText) {
+                alert("Veuillez entrer une sanction !");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const student = users.find(user => user.username === search && user.role === "eleve");
+
+            if (student) {
+                let sanctions = JSON.parse(localStorage.getItem(`sanctions_${student.username}`)) || [];
+                sanctions.push(sanctionText);
+                localStorage.setItem(`sanctions_${student.username}`, JSON.stringify(sanctions));
+
+                alert("Sanction ajoutée avec succès.");
+                // Réafficher les sanctions après ajout
+                const sanctionsList = document.getElementById("sanctions-list");
+                const li = document.createElement("li");
+                li.textContent = sanctionText;
+                sanctionsList.appendChild(li);
+
+                document.getElementById("sanction").value = "";
+            } else {
+                alert("Élève non trouvé.");
+            }
+        }
+    </script>
+</body>
+</html>

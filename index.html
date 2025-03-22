@@ -1,72 +1,70 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pronote RP</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Connexion - Système Scolaire</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Pronote RP</h1>
-        <p>Bienvenue sur votre espace scolaire RP</p>
-    </header>
-
-    <div class="container">
+    <div class="login-container">
         <h2>Connexion</h2>
-        <div class="login-form">
-            <input type="text" id="username" placeholder="Votre pseudo" />
-            <input type="password" id="password" placeholder="Mot de passe" />
-            <select id="role">
-                <option value="eleve">Élève</option>
-                <option value="professeur">Professeur</option>
-                <option value="vie_scolaire">Vie Scolaire</option>
-            </select>
-            <button onclick="connect()">Se connecter</button>
-        </div>
-
-        <div id="dashboard" style="display: none;">
-            <h2>Tableau de bord</h2>
-            
-            <!-- Vie scolaire dashboard -->
-            <div id="vieScolaireDashboard" style="display: none;">
-                <h3>Vie Scolaire - Créer un groupe</h3>
-                <input type="text" id="newGroupName" placeholder="Nom du groupe (ex : Mathématiques)" />
-                <button onclick="createGroup()">Créer un groupe</button>
-                <br><br>
-                <h3>Ajouter des élèves au groupe</h3>
-                <select id="studentsList">
-                    <option value="eleve1">Élève 1</option>
-                    <option value="eleve2">Élève 2</option>
-                    <option value="eleve3">Élève 3</option>
-                </select>
-                <button onclick="addStudentToGroup()">Ajouter au groupe</button>
-                <br><br>
-                <h3>Liste des groupes créés :</h3>
-                <ul id="groupList"></ul>
-            </div>
-
-            <!-- Professeur dashboard -->
-            <div id="professorDashboard" style="display: none;">
-                <h3>Professeur - Gérer la classe</h3>
-                <select id="classCategory">
-                    <option value="maths">Mathématiques</option>
-                    <option value="francais">Français</option>
-                </select>
-                <br><br>
-                <h3>Élèves dans votre classe :</h3>
-                <ul id="classList"></ul>
-                <button onclick="addGrade()">Ajouter une note</button>
-                <button onclick="markAbsence()">Marquer une absence</button>
-            </div>
-        </div>
-
-        <div id="restrictedMessage" class="restricted" style="display: none;">
-            Vous n'avez pas accès à ce tableau.
-        </div>
+        <input type="text" id="username" placeholder="Nom d'utilisateur">
+        <input type="password" id="password" placeholder="Mot de passe">
+        <button onclick="login()">Se connecter</button>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        function addDefaultUsers() {
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+
+            if (users.length === 0) {
+                users.push(
+                    { username: "eleve1", password: "eleve123", role: "eleve" },
+                    { username: "prof1", password: "prof123", role: "prof" },
+                    { username: "vie_scolaire1", password: "vie123", role: "vie_scolaire" },
+                    { username: "direction1", password: "dir123", role: "direction" }
+                );
+                localStorage.setItem("users", JSON.stringify(users));
+            }
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            addDefaultUsers();
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+
+            const user = users.find(u => u.username === username && u.password === password);
+
+            if (user) {
+                sessionStorage.setItem("user", username);
+
+                switch(user.role) {
+                    case "eleve":
+                        window.location.href = "eleve.html";
+                        break;
+                    case "prof":
+                        window.location.href = "prof.html";
+                        break;
+                    case "vie_scolaire":
+                        window.location.href = "vie_scolaire.html";
+                        break;
+                    case "direction":
+                        window.location.href = "direction.html";
+                        break;
+                    default:
+                        alert("Rôle inconnu");
+                }
+            } else {
+                alert("Identifiants incorrects");
+            }
+        }
+
+        window.onload = addDefaultUsers;
+    </script>
 </body>
 </html>
+

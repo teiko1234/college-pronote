@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direction - Gestion des Comptes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h2>Gestion des Comptes et Recherche d'Élève</h2>
+
+    <div>
+        <h3>Créer un nouveau compte</h3>
+        <label for="new-username">Nom d'utilisateur :</label>
+        <input type="text" id="new-username" placeholder="Nom d'utilisateur">
+        <label for="new-password">Mot de passe :</label>
+        <input type="password" id="new-password" placeholder="Mot de passe">
+        <label for="new-role">Rôle :</label>
+        <select id="new-role">
+            <option value="eleve">Élève</option>
+            <option value="prof">Professeur</option>
+            <option value="vie_scolaire">Vie Scolaire</option>
+            <option value="direction">Direction</option>
+        </select>
+        <button onclick="createAccount()">Créer le compte</button>
+    </div>
+
+    <div>
+        <h3>Rechercher un élève (nom d'utilisateur) :</h3>
+        <input type="text" id="search" placeholder="Nom d'utilisateur">
+        <button onclick="searchStudent()">Rechercher</button>
+    </div>
+
+    <div id="student-info" style="display: none;">
+        <h3>Détails de l'élève</h3>
+        <p id="student-details"></p>
+
+        <h4>Notes :</h4>
+        <ul id="notes-list"></ul>
+
+        <h4>Absences :</h4>
+        <ul id="absences-list"></ul>
+
+        <h4>Sanctions :</h4>
+        <ul id="sanctions-list"></ul>
+
+        <label for="sanction">Ajouter une sanction :</label>
+        <input type="text" id="sanction" placeholder="Sanction à ajouter">
+        <button onclick="addSanction()">Ajouter</button>
+    </div>
+
+    <script>
+        // Fonction pour créer un compte
+        function createAccount() {
+            const username = document.getElementById("new-username").value.trim();
+            const password = document.getElementById("new-password").value.trim();
+            const role = document.getElementById("new-role").value;
+
+            if (!username || !password) {
+                alert("Veuillez remplir tous les champs.");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const existingUser = users.find(user => user.username === username);
+
+            if (existingUser) {
+                alert("Ce nom d'utilisateur existe déjà.");
+                return;
+            }
+
+            const newUser = {
+                username,
+                password,
+                role
+            };
+
+            users.push(newUser);
+            localStorage.setItem("users", JSON.stringify(users));
+            alert("Compte créé avec succès.");
+            document.getElementById("new-username").value = "";
+            document.getElementById("new-password").value = "";
+        }
+
+        // Fonction pour rechercher un élève
+        function searchStudent() {
+            const search = document.getElementById("search").value.trim();
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const student = users.find(user => user.username === search && user.role === "eleve");
+
+            if (student) {
+                // Affichage des détails de l'élève
+                document.getElementById("student-info").style.display = "block";
+                document.getElementById("student-details").textContent = `Nom d'utilisateur : ${student.username}`;
+                
+                // Récupérer les notes, absences et sanctions de l'élève
+                const notes = JSON.parse(localStorage.getItem(`notes_${student.username}`)) || [];
+                const absences = JSON.parse(localStorage.getItem(`absences_${student.username}`)) || [];
+                const sanctions = JSON.parse(localStorage.getItem(`sanctions_${student.username}`)) || [];
+
+                // Afficher les notes
+                const notesList = document.getElementById("notes-list");
+                notesList.innerHTML = "";
+                notes.forEach(note => {
+                    const li = document.createElement("li");
+                    li.textContent = note;
+                    notesList.appendChild(li);
+                });
+
+                // Afficher les absences
+                const absencesList = document.getElementById("absences-list");
+                absencesList.innerHTML = "";
+                absences.forEach(abs => {
+                    const li = document.createElement("li");
+                    li.textContent = abs;
+                    absencesList.appendChild(li);
+                });
+
+                // Afficher les sanctions
+                const sanctionsList = document.getElementById("sanctions-list");
+                sanctionsList.innerHTML = "";
+                sanctions.forEach(sanction => {
+                    const li = document.createElement("li");
+                    li.textContent = sanction;
+                    sanctionsList.appendChild(li);
+                });
+            } else {
+                alert("Élève non trouvé ou rôle incorrect.");
+                document.getElementById("student-info").style.display = "none";
+            }
+        }
+
+        // Fonction pour ajouter une sanction
+        function addSanction() {
+            const search = document.getElementById("search").value.trim();
+            const sanctionText = document.getElementById("sanction").value.trim();
+
+            if (!sanctionText) {
+                alert("Veuillez entrer une sanction !");
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem("users")) || [];
+            const student = users.find(user => user.username === search && user.role === "eleve");
+
+            if (student) {
+                let sanctions = JSON.parse(localStorage.getItem(`sanctions_${student.username}`)) || [];
+                sanctions.push(sanctionText);
+                localStorage.setItem(`sanctions_${student.username}`, JSON.stringify(sanctions));
+
+                alert("Sanction ajoutée avec succès.");
+                // Réafficher les sanctions après ajout
+                const sanctionsList = document.getElementById("sanctions-list");
+                const li = document.createElement("li");
+                li.textContent = sanctionText;
+                sanctionsList.appendChild(li);
+
+                document.getElementById("sanction").value = "";
+            } else {
+                alert("Élève non trouvé.");
+            }
+        }
+    </script>
+</body>
+</html>
+
